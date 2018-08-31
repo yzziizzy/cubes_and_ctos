@@ -11,9 +11,16 @@ module.exports = {
 				intelligence: 3,
 				rhetoric: 1,
 				cunning: 1,
+				confidence: 0, 
+				// slipperyness / weaselyness
 			},
 		},
 		hp_per_level: 10,
+		
+		spells: {},
+		attacks: {
+			condescension: { dam: 20 },
+		}
 		
 	},
 	
@@ -27,6 +34,7 @@ module.exports = {
 				intelligence: 0,
 				rhetoric: 0,
 				cunning: 2,
+				confidence: 2,
 			},
 		},
 		hp_per_level: 5,
@@ -43,6 +51,7 @@ module.exports = {
 				intelligence: 1,
 				rhetoric: 1,
 				cunning: 3,
+				confidence: 0,
 			},
 		},
 		hp_per_level: 4,
@@ -59,6 +68,7 @@ module.exports = {
 				intelligence: 0,
 				rhetoric: 3,
 				cunning: 2,
+				confidence: 4,
 			},
 		},
 		hp_per_level: 7,

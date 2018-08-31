@@ -3,6 +3,8 @@ var irc = require('irc');
 require('colors');
 
 
+// +1 inspiration to sigsegv for dilbert suggestion
+
 var helpers = require('./helpers.js');
 
 
@@ -26,7 +28,7 @@ var game = {
 	
 	classes: require('./classes.js'),
 	monsters: require('./monsters.js'),
-	
+	weapons: require('./weapons.js'),
 	
 }
 
@@ -35,10 +37,59 @@ var game = {
 
 // ----------------------- combat ----------------------------
 
- 
-function attack(player, target, weapon) {
+// should be possessivize
+function pluralize(msg) {
+	// TODO: fix
+	return msg + "'s";
+}
+
+function fillText(user, target, text) {
+	return text.replace('%user', user.name)
+		.replace('%user\'s', pluralize(user.name))
+		.replace('%target', target.name)
+		.replace('%target\'s', pluralize(target.name))
+}
+
+
+function attack(user, target, weaponname) {
+	var msg;
+	var w = helpers.applyUserWeaponMods(user, weaponname);
 	
+	// hit odds
+	var hitroll = helpers.advRoll(20, 0);
+	hitroll += user.mods[w.hit.mod]|0;
 	
+	// armor odds
+	var armor = target.ac | 0;
+	
+	console.log(hitroll, armor);
+	
+	if(hitroll > armor) {
+		// hit
+		var d = helpers.rollDice(w.dam);
+		target.hp = Math.max(0, target.hp - d);
+		
+		msg = target.hp == 0 ? w.critical[0] : w.success[0]; 
+		
+		respond(fillText(user, target, msg).magenta);
+		
+		if(target.hp == 0) {
+		
+			// TODO: increase exp
+			
+			// TODO: death notification, list combatants
+			
+			// TODO: check for end of combat
+			
+			
+			listTargets();
+		}
+	}
+	else {
+		// miss
+		msg = w.failure[0];
+		respond(fillText(user, target, msg).magenta);
+	}
 	
 }
 
@@ -50,8 +101,17 @@ function listTargets() {
 	var targets = game.conflict.targets;
 	
 	var i = 1;
-	for(var t in targets) {
-		respond((i + ': ' + t.name + ' (' + t.dist + 'ft)').yellow);
+	for(var ti in targets) {
+		var t = targets[ti];
+		var prefix = i;
+		var color = 'yellow';
+		if(t.hp <= 0) {
+			prefix = 'X';
+			color = 'gray';
+		}
+		
+		
+		respond((prefix + ': ' + t.name /*+ ' (' + t.dist + 'ft)'*/)[color]);
 		i++;
 	}
 	
@@ -65,7 +125,7 @@ function beginCombat() {
 	var ml = loc.monsters;
 	var mon_index = 1;
 	
-	game.combat = {
+	game.conflict = {
 		targets: [],
 		round: 1,
 	};
@@ -76,22 +136,44 @@ function beginCombat() {
 		
 		for(var i = 0; i < num; i++) {
 			var m = spawnMonster(mon, game.monsters[mon.name]);
-			game.combat.targets.push(m);
+			game.conflict.targets.push(m);
 		}
-	
+		
 	});
 	
 	
 	function spawnMonster(cfg, proto) {
 		
 		var q = {
-			hp: randInt(),
+			name: proto.name,
 		};
 		
 		
-		return _.extend({}, proto, q);
+		return _.extend({}, proto.defaults, q);
 	}
 	
+	
+}
+
+
+
+// ----------------------- player utils ----------------------------
+
+
+function pmInfo(player) {
+	if(!player) return;
+	
+	pm_nick(player.nick, "----------")
+	pm_nick(player.nick, "name: ".bold + player.name);
+	pm_nick(player.nick, "class: ".bold + player.class);
+	pm_nick(player.nick, "motivation: ".bold + player.hp);
+	
+}
+function pmStats(player) {
+	if(!player) return;
+	
+	pm_nick(player.nick, "----------")
+	pm_nick(player.nick, "motivation: ".bold + player.hp);
 	
 }
 
@@ -130,8 +212,13 @@ function pm(name, msg) {
 }
 
 function respond(msg) {
-	console.log(msg)
+//	console.log(msg)
 	cl.say(game.channel, msg);
+}
+
+function pm_nick(nick, msg) {
+//	console.log(msg)
+	cl.say(nick, msg);
 }
 
 function narrate(msg) {
@@ -165,6 +252,10 @@ var word_list = {
 	'walk': 'move',
 	'mov': 'move', // stemmer strips e's off the end
 	'run': 'move',
+	'attack': 'attack',
+	'smit': 'attack',
+	'hit': 'attack',
+	//'cast': 'cast' // different parsing semantics
 }
 
 function stemmer(raw) {
@@ -206,15 +297,52 @@ function processPlayerCommand(player, raw) {
 		game.location = found;
 		arrive();
 	}
+	else if(action == "attack") {
+		if(game.conflict == null) {
+			respond("You are not in combat right now".red);
+			return;
+		}
+		
+		// parse the command
+		var weaponname;
+		var target;
+		
+		// try to find the weapon
+		for(var i = 0; i < sp.length - 1; i++) {
+			if(sp[i] == 'with') {
+				weaponname = sp[i+1]; // TODO: levenstein distance error correction 
+			}
+		}
+		
+		// try to find a target 
+		//  HACK: choose the first one for now
+		for(var i = 0; i < game.conflict.targets.length; i++) {
+			if(game.conflict.targets[i].hp > 0) {
+				target = game.conflict.targets[i];
+				break;
+			}
+		}
+		
+		attack(player, target, weaponname);
+	}
 	
 }
 
 
 function arrive() {
 	
-	var loc = game.location;
+	var loc = game.dungeon.locations[game.location];
 	
-	narrate(game.dungeon.locations[loc].entry);
+	narrate(loc.entry);
+	
+	
+	if(loc.monsters) {
+		beginCombat();
+		
+		listTargets();
+	}
+	
+	
 }
 
 
@@ -223,12 +351,22 @@ function arrive() {
 function ingest(nick, msg) {
 	//console.log(nick, msg);
 	
+	// normalize whitespace
+	msg = msg.replace(/\s+/g, ' ');
+	
 	var cmd_fns = {
 		join: function(str) {
 			var opts = str.replace(/\s+/, ' ').split(' ');
 			//           char name, class
 			console.log(opts);
 			joinGame(nick, opts[0], opts[1]);
+		},
+		
+		stats: function(str) {
+			pmStats(playerByNick(nick));
+		},
+		info: function(str) {
+			pmInfo(playerByNick(nick));
 		},
 		
 		start: function(str) {
