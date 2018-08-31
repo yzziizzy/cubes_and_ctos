@@ -6,6 +6,9 @@ require('colors');
 var helpers = require('./helpers.js');
 
 
+function randInt(min, max) {
+	return (min + (Math.random() * (max - min))) | 0;
+}
 
 function trim(s) {
 	return s.replace(/^\s+/, '').replace(/\s+$/, '');
@@ -59,9 +62,35 @@ function listTargets() {
 function beginCombat() {
 	
 	var loc = game.dungeon.locations[game.location];
+	var ml = loc.monsters;
+	var mon_index = 1;
+	
+	game.combat = {
+		targets: [],
+		round: 1,
+	};
 	
 	
+	loc.monsters.map(function(mon) {
+		var num = randInt(mon.min, mon.max); 
+		
+		for(var i = 0; i < num; i++) {
+			var m = spawnMonster(mon, game.monsters[mon.name]);
+			game.combat.targets.push(m);
+		}
 	
+	});
+	
+	
+	function spawnMonster(cfg, proto) {
+		
+		var q = {
+			hp: randInt(),
+		};
+		
+		
+		return _.extend({}, proto, q);
+	}
 	
 	
 }
