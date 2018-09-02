@@ -8,6 +8,7 @@ module.exports = {
 	createPlayer: createPlayer, 
 	levelUp: levelUp,
 	applyUserWeaponMods: applyUserWeaponMods,
+	rollInitiative: rollInitiative,
 	nRoll: nRoll,
 	advRoll: advRoll,
 	multiRoll: multiRoll,
@@ -67,7 +68,13 @@ function applyUserWeaponMods(user, weaponname) {
 }
 
 
-function nRoll(sides, adv) {
+function rollInitiative(player) {
+	// TODO: advantage
+	player.initiative = nRoll(20) + (player.mods.initiative|0);
+}
+
+
+function nRoll(sides) {
 	return Math.round((Math.random() * sides));
 }
 

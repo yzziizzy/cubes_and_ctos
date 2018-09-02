@@ -25,7 +25,7 @@ var game = {
 	players: {},
 	
 	conflict: null,
-	
+	pastConflicts: [],
 	
 	dungeon: require('./dungeon.js'),
 	
@@ -80,12 +80,14 @@ function attack(user, target, weaponname) {
 		
 			// TODO: increase exp
 			
-			// TODO: death notification, list combatants
+			// TODO: death notification
 			
-			// TODO: check for end of combat
-			
-			
-			listTargets();
+			if(!target.nick) {
+				game.conflict.remainingTargets--;
+			}
+			else {
+				game.conflict.remainingPlayers--;
+			}
 		}
 	}
 	else {
@@ -125,19 +127,33 @@ function listTargets() {
 function beginCombat(encounter) {
 	
 	console.log('beginning combat'.yellow);
-	respond('\x037' + encounter.intro + '\x038sdfsdf');
+	respond(encounter.intro.yellow.bold);
 	
 // 	var loc = game.dungeon.locations[game.location];
 	var ml = encounter.monsters;
 	var mon_index = 1;
 	
-	game.conflict = {
+	var con = game.conflict = {
 		targets: [],
-		round: 1,
+		players: [],
+		combatants: [],
 		
+		round: 1,
+		turnIndex: 0, // which combatant's turn it is now 
+		remainingTargets: 0,
+		remainingPlayers: 0,
+		
+		location: game.location,
 	};
 	
 	
+	// add players
+	for(var k in game.players) {
+		con.players.push(game.players[k]);
+	}
+	
+	
+	// add monsters
 	ml.map(function(mon) {
 		var num = randInt(mon.min, mon.max); 
 		
@@ -153,16 +169,92 @@ function beginCombat(encounter) {
 		
 		var q = {
 			name: proto.name,
+			mods: {},
 		};
-		
 		
 		return _.extend({}, proto.defaults, q);
 	}
 	
 	
-	// roll initiative
+	
+	// calculate initiative
+	con.combatants = con.players.concat(con.targets);
+	
+	con.combatants.map(helpers.rollInitiative);
+
+	con.combatants = _.sortBy(con.combatants, 'initiative').reverse();
 	
 	
+	//
+	con.remainingPlayers = con.players.length;
+	con.remainingTargets = con.targets.length;
+	
+
+	console.log(helpers.nRoll(20));
+	runCombat();
+}
+
+
+// processes npc combat turns until prompting the next player
+function runCombat() {
+	
+	var con = game.conflict;
+	var p = con.combatants[con.turnIndex];
+	
+	// end combat
+	if(con.remainingPlayers == 0 || con.remainingTargets == 0) {
+		return endCombat();
+	}
+	
+	// skip the dead 
+	if(p.hp == 0) {
+		con.turnIndex = (con.turnIndex + 1) % con.combatants.length;
+		return runCombat();
+	}
+	
+	
+	
+	
+	
+	if(p.nick) { // human player
+		
+		listTargets();
+		
+		respond((p.name + ", it is your turn.").yellow.bold);
+		
+		return;
+	}
+	else { // npc
+		
+		// TODO: implement npc combat
+		con.turnIndex = (con.turnIndex + 1) % con.combatants.length;
+		return runCombat();
+		
+	}
+	
+	// check to see if any combatants died
+	for(var i = 0; i < con.combatants.length; i++) {
+		var c = con.combatants[i];
+		if(c.hp == 0) {
+			
+			
+		}
+	}
+	
+	// TODO: advance the round
+	
+}
+
+
+// TODO: everything here
+function endCombat() {
+	
+	respond("The fight is over".green);
+	
+	game.pastConflicts.push(game.conflict);
+	game.conflict = null;
+	
+	// TODO: mark off 'first' encounters
 	
 	
 }
@@ -197,7 +289,6 @@ function checkEncounter() {
 		
 		beginCombat(encounter);
 		
-		listTargets();
 	}
 	else {
 		console.log('no encounter found.'.yellow);
@@ -362,6 +453,12 @@ function processPlayerCommand(player, raw) {
 			}
 		}
 		
+		if(!game.weapons[weaponname]) {
+			respond(("No such weapon: " + weaponname).red);
+			return;
+		}
+		
+		
 		// try to find a target 
 		//  HACK: choose the first one for now
 		for(var i = 0; i < game.conflict.targets.length; i++) {
@@ -371,7 +468,12 @@ function processPlayerCommand(player, raw) {
 			}
 		}
 		
+		// BUG: crashes when all targets are dead
+		
 		attack(player, target, weaponname);
+		
+		game.conflict.turnIndex = (game.conflict.turnIndex + 1) % game.conflict.combatants.length;
+		runCombat();
 	}
 	
 }

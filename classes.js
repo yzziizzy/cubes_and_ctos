@@ -69,6 +69,7 @@ module.exports = {
 				rhetoric: 3,
 				cunning: 2,
 				confidence: 4,
+				initiative: 1,
 			},
 		},
 		hp_per_level: 7,
