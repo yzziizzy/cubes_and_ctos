@@ -7,20 +7,26 @@ module.exports = {
 	
 	locations: {
 		parking_lot: {
-			entry: "You arrive at the edge of a vast sea of vehicles. It is quiet.",
+			entry: "You arrive at the edge of a vast sea of vehicles.",
 			edges: {
 				lawn: ["There is a grassy lawn to the east.", 'lawn', 'east', 'grass'],
 				tower_entrance: ["A large glass tower looms to the north.", 'tower', 'north'],
 				highway: ["The roar of traffic can be heard from the south.", 'traffic', 'roar', 'south', 'highway', 'road'],
 			},
-			monsters: [
+			encounters: [
 				{
-					name: 'parking_attendant',
-					min: 2,
-					max: 4,
+					intro: "A group of surley parking attendants approach.",
+					freq: 'first', // there can only be one first encounter for now
+					monsters: [
+						{
+							name: 'parking_attendant',
+							min: 2,
+							max: 4,
+						},
+						
+						
+					],
 				},
-				
-				
 			],
 		},
 		

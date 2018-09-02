@@ -1,4 +1,6 @@
 var _ = require('underscore');
+var fs = require('fs');
+
 var irc = require('irc');
 require('colors');
 
@@ -18,7 +20,8 @@ function trim(s) {
 
 
 var game = {
-	channel: '#ministryofsillywalks',
+// 	channel: '#ministryofsillywalks',
+	channel: '#cubes',
 	players: {},
 	
 	conflict: null,
@@ -119,19 +122,23 @@ function listTargets() {
 
 
 
-function beginCombat() {
+function beginCombat(encounter) {
 	
-	var loc = game.dungeon.locations[game.location];
-	var ml = loc.monsters;
+	console.log('beginning combat'.yellow);
+	respond('\x037' + encounter.intro + '\x038sdfsdf');
+	
+// 	var loc = game.dungeon.locations[game.location];
+	var ml = encounter.monsters;
 	var mon_index = 1;
 	
 	game.conflict = {
 		targets: [],
 		round: 1,
+		
 	};
 	
 	
-	loc.monsters.map(function(mon) {
+	ml.map(function(mon) {
 		var num = randInt(mon.min, mon.max); 
 		
 		for(var i = 0; i < num; i++) {
@@ -153,8 +160,49 @@ function beginCombat() {
 	}
 	
 	
+	// roll initiative
+	
+	
+	
+	
 }
 
+
+function checkEncounter() {
+	
+	var loc = game.dungeon.locations[game.location];
+	
+	if(!loc.encounters || loc.encounters.length == 0) {
+		respond("It is quiet.".green);
+		return;
+	}
+	
+	// look for first encounters
+	var encounter;
+	for(var i = 0; i < loc.encounters.length; i++) {
+		if(loc.encounters[i].freq == 'first') {
+			encounter = loc.encounters[i];
+			break;
+		}
+	}
+	
+	if(!encounter) {
+		// check for random encounter
+		
+		// TODO:
+	}
+	
+	
+	if(encounter) {
+		
+		beginCombat(encounter);
+		
+		listTargets();
+	}
+	else {
+		console.log('no encounter found.'.yellow);
+	}
+}
 
 
 // ----------------------- player utils ----------------------------
@@ -335,12 +383,7 @@ function arrive() {
 	
 	narrate(loc.entry);
 	
-	
-	if(loc.monsters) {
-		beginCombat();
-		
-		listTargets();
-	}
+	checkEncounter();
 	
 	
 }
@@ -360,6 +403,9 @@ function ingest(nick, msg) {
 			//           char name, class
 			console.log(opts);
 			joinGame(nick, opts[0], opts[1]);
+			
+			// color test
+			//respond('\x03000 \x03011 \x03022 \x03033 \x03044 \x03055 \x03066 \x03077 \x03088 \x03099  \x031010 \x031111 \x031212 \x031313 \x031414 \x031515');
 		},
 		
 		stats: function(str) {
@@ -375,6 +421,18 @@ function ingest(nick, msg) {
 			game.location = game.dungeon.start;
 			arrive();
 			
+		},
+		
+		save: function(str) {
+			if(nick != 'izzy' && nick != 'Izzy') return;
+			
+			fs.writeFileSync('./savefile.js', JSON.stringify(game), 'utf-8');
+		},
+		
+		load: function(str) {
+			if(nick != 'izzy' && nick != 'Izzy') return;
+			
+			game = JSON.parse(fs.readFileSync('./savefile.js', 'utf-8'));
 		},
 		
 		fuckoff: function(str) {
@@ -432,7 +490,8 @@ function ingest(nick, msg) {
 
 
 var cl = new irc.Client('irc.foonetic.net', 'manager-san', {
-	channels: ['#ministryofsillywalks'],
+// 	channels: ['#ministryofsillywalks'],
+	channels: ['#cubes'],
 	autoConnect: false,
 	autoRejoin: false,
 	encoding: 'UTF-8',
@@ -453,6 +512,10 @@ cl.addListener('pm', function (from, message) {
 
 
 cl.addListener('message#ministryofsillywalks', function (from, message) {
+	ingest(from, message);
+});
+
+cl.addListener('message#cubes', function (from, message) {
 	ingest(from, message);
 });
 
@@ -497,6 +560,4 @@ cl.addListener('selfMessage', function (error) {
 
 
 cl.connect();
-
-
 
