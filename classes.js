@@ -13,14 +13,16 @@ module.exports = {
 				cunning: 1,
 				confidence: 0, 
 				// slipperyness / weaselyness
+				// crazy
+			},
+			attacks: {
+				condescension: { dam: 20 },
 			},
 		},
 		hp_per_level: 10,
 		
 		spells: {},
-		attacks: {
-			condescension: { dam: 20 },
-		}
+
 		
 	},
 	

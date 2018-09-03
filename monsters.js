@@ -10,11 +10,29 @@ module.exports = {
 		defaults: {
 			ac: 6,
 			hp: 10,
+			attacks: {
+				bum_harass: { foo: 1},
+			},
 		},
 		
-		attacks: {
-			
+
+	},
+	
+	bum: {
+		name: "Bum",
+		defaults: {
+			ac: 3,
+			hp: 30,
+			mods: {
+				crazy: 2,
+			},
+			attacks: {
+				panhandling: {},
+				bum_harass: {},
+			},
 		},
+		
+
 	},
 	
 	

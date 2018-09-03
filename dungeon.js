@@ -22,11 +22,15 @@ module.exports = {
 							name: 'parking_attendant',
 							min: 2,
 							max: 4,
+							drops: [ 'parking_pass' ],
 						},
 						
 						
 					],
 				},
+			],
+			items: [
+				
 			],
 		},
 		
@@ -36,6 +40,23 @@ module.exports = {
 				parking_lot: ["A sea of vehicles lies to the west.", 'parking', 'sea', 'lot', 'west'],
 				
 			},
+			encounters: [
+				{
+					intro: "A slovenly vagrant wanders out from the bushes. He makes eye contact.",
+					freq: 4, 
+					monsters: [
+						{
+							name: 'bum',
+							min: 1,
+							max: 1,
+							drops: [ 'parking_pass' ],
+						},
+						
+						
+					],
+				},
+			],
+			
 		},
 		
 		highway: {

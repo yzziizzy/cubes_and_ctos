@@ -48,7 +48,8 @@ function levelUp(player) {
 function applyUserWeaponMods(user, weaponname) {
 	var w = _.extend({}, weapons[weaponname]);
 	
-	var a = classes[user.class].attacks[weaponname];
+// 	var a = classes[user.class].attacks[weaponname];
+	var a = user.attacks[weaponname];
 	if(!a) return w;
 	
 	if(a.dam) {
@@ -75,7 +76,7 @@ function rollInitiative(player) {
 
 
 function nRoll(sides) {
-	return Math.round((Math.random() * sides));
+	return Math.round((Math.random() * (sides - 1))) + 1;
 }
 
 function advRoll(sides, adv) {

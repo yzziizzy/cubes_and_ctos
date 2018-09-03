@@ -43,9 +43,47 @@ module.exports = addKeys({
 	// attacks: 
 		
 	// general attacks
+	bribe: {
+		
+		
+	}
+	
+	
+	panhandling: {
+		hit: { mod: 'rhetoric' },
+		dam: dam([1, /*d*/ 4]),
+		failcb: function(user, target) {
+			// subtract money or items
+		},
+		success: [
+			"%user leeches some coins and self-respect from %target.",
+		],
+		failure: [
+			"%target replies, 'Get a job, sluggard.'",
+		],
+		critical: [
+			"%target is overwhelmed with false compassion, dedicating the rest of their life to subsidizing the lazy.",
+		],
+	},
+	
+	bum_harass: {
+		hit: { mod: 'crazy' },
+		dam: dam([1, /*d*/ 6]),
+		success: [
+			"%user screams randomly at %target.",
+		],
+		failure: [
+			"%user's incoherent ranting is ignored.",
+		],
+		critical: [
+			"%target frantically flees %user's insanity.",
+		],
+	},
+	
+	
 	bureaucracy: {
 		hit: { mod: 'rhetoric' },
-		dam: [1, /*d*/ 6],
+		dam: dam([1, /*d*/ 6]),
 		success: [
 			"%target has become mired in paperwork.",
 		],

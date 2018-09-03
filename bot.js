@@ -10,6 +10,9 @@ require('colors');
 var helpers = require('./helpers.js');
 
 
+
+
+
 function randInt(min, max) {
 	return (min + (Math.random() * (max - min))) | 0;
 }
@@ -37,6 +40,8 @@ var game = {
 
 
 
+var npc_combat = require('./npc_combat.js')(game, attack /*temp*/);
+
 
 // ----------------------- combat ----------------------------
 
@@ -57,7 +62,7 @@ function fillText(user, target, text) {
 function attack(user, target, weaponname) {
 	var msg;
 	var w = helpers.applyUserWeaponMods(user, weaponname);
-	
+	console.log('-----', weaponname, w, user, target);
 	// hit odds
 	var hitroll = helpers.advRoll(20, 0);
 	hitroll += user.mods[w.hit.mod]|0;
@@ -74,13 +79,14 @@ function attack(user, target, weaponname) {
 		
 		msg = target.hp == 0 ? w.critical[0] : w.success[0]; 
 		
-		respond(fillText(user, target, msg).magenta);
+		respond(fillText(user, target, msg).magenta + " " + ('-' + d).red);
+		pm_nick(target.nick, ("Your hp: " + target.hp).red.bold);
+		
 		
 		if(target.hp == 0) {
 		
 			// TODO: increase exp
 			
-			// TODO: death notification
 			
 			if(!target.nick) {
 				game.conflict.remainingTargets--;
@@ -88,6 +94,8 @@ function attack(user, target, weaponname) {
 			else {
 				game.conflict.remainingPlayers--;
 			}
+			respond((target.name + " has died.").red.bold);
+			pm_nick(target.nick, "You are dead.".red.bold);
 		}
 	}
 	else {
@@ -226,7 +234,10 @@ function runCombat() {
 	}
 	else { // npc
 		
-		// TODO: implement npc combat
+		
+		npc_combat.npcAttack(con.combatants[con.turnIndex]);
+		
+		
 		con.turnIndex = (con.turnIndex + 1) % con.combatants.length;
 		return runCombat();
 		
@@ -355,9 +366,14 @@ function respond(msg) {
 	cl.say(game.channel, msg);
 }
 
+function notice(nick, msg) {
+//	console.log(msg)
+	if(nick) cl.notice(nick, msg);
+}
+
 function pm_nick(nick, msg) {
 //	console.log(msg)
-	cl.say(nick, msg);
+	if(nick) cl.say(nick, msg);
 }
 
 function narrate(msg) {
@@ -410,8 +426,8 @@ function processPlayerCommand(player, raw) {
 	
 	if(!action) {
 		console.log('unknown action: ', sp[0]);
-		return ;
-		
+		respond((player.name + ': huh?').red);
+		return;
 	}
 	
 	if(action == 'move') {
@@ -475,6 +491,9 @@ function processPlayerCommand(player, raw) {
 		game.conflict.turnIndex = (game.conflict.turnIndex + 1) % game.conflict.combatants.length;
 		runCombat();
 	}
+	else {
+		respond((player.name + ': huh?').red);
+	}
 	
 }
 
@@ -519,6 +538,11 @@ function ingest(nick, msg) {
 		
 		start: function(str) {
 			if(nick != 'izzy' && nick != 'Izzy') return;
+			
+			if(Object.keys(game.players).length == 0) {
+				respond("No players have joined".red.bold);
+				return;
+			}
 			
 			game.location = game.dungeon.start;
 			arrive();
