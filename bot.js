@@ -90,6 +90,7 @@ function attack(user, target, weaponname) {
 			
 			if(!target.nick) {
 				game.conflict.remainingTargets--;
+				listTargets();
 			}
 			else {
 				game.conflict.remainingPlayers--;
@@ -102,6 +103,21 @@ function attack(user, target, weaponname) {
 		// miss
 		msg = w.failure[0];
 		respond(fillText(user, target, msg).magenta);
+	}
+	
+}
+
+function advanceCombatTurn() {
+	var con = game.conflict;
+	con.turnIndex++;
+	
+	if(con.turnIndex >= con.combatants.length) {
+		// end of round
+		con.round++;
+		
+		con.turnIndex = 0;
+		
+		respond(("Round " + con.round).gray);
 	}
 	
 }
@@ -216,7 +232,8 @@ function runCombat() {
 	
 	// skip the dead 
 	if(p.hp == 0) {
-		con.turnIndex = (con.turnIndex + 1) % con.combatants.length;
+		advanceCombatTurn();
+		
 		return runCombat();
 	}
 	
@@ -226,7 +243,7 @@ function runCombat() {
 	
 	if(p.nick) { // human player
 		
-		listTargets();
+		//listTargets();
 		
 		respond((p.name + ", it is your turn.").yellow.bold);
 		
@@ -238,7 +255,7 @@ function runCombat() {
 		npc_combat.npcAttack(con.combatants[con.turnIndex]);
 		
 		
-		con.turnIndex = (con.turnIndex + 1) % con.combatants.length;
+		advanceCombatTurn();
 		return runCombat();
 		
 	}
@@ -488,7 +505,7 @@ function processPlayerCommand(player, raw) {
 		
 		attack(player, target, weaponname);
 		
-		game.conflict.turnIndex = (game.conflict.turnIndex + 1) % game.conflict.combatants.length;
+		advanceCombatTurn();
 		runCombat();
 	}
 	else {

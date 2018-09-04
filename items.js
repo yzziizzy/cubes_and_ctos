@@ -3,6 +3,7 @@ module.exports = {
 		name: 'Log Book',
 	},
 	
+	earbuds: {}, // immunity to certain audible attacks
 	
 	
 };
