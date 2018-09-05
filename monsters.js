@@ -1,5 +1,17 @@
 module.exports = {
 	
+	chatty_coworker: {
+		name: "Chatty Coworker",
+		defaults: {
+			ac: 6,
+			hp: 10,
+			attacks: {
+				boring_smalltalk: { foo: 1},
+			},
+		},
+		
+	},
+
 	security: {
 		
 		

@@ -71,6 +71,31 @@ module.exports = {
 			entry: "You stand before a towering glass edifice. A foreboding spirit is in the air -- evil lies within.",
 			edges: {
 				parking_lot: ["Safety lies in the sea to the south.", 'parking', 'lot', 'south', 'safety'],
+				foyer: ["A revolving door spins ominously in front of you.", 'front', 'forward', 'door', 'enter', 'tower', 'in'],
+			},
+		},
+		
+		foyer: {
+			entry: "A cavernous hall surrounds you. Locals call it \"Foy'yer\".",
+			edges: {
+				tower_entrance: ["Freedom peeks though a large revolving door.", 'exit', 'leave', 'revolving', 'door'],
+				balcony: ["Stairs lead up to a balcony.", 'stairs', 'balcony'],
+				elevators: [],
+			},
+		},
+		
+		coffee_shop: {
+			entry: "",
+			edges: {
+				foyer: ["", 'exit', 'leave', 'revolving', 'door'],
+				
+			},
+		},
+		
+		restrooms: {
+			entry: "",
+			edges: {
+				foyer: ["", 'exit', 'leave', 'revolving', 'door'],
 				
 			},
 		},

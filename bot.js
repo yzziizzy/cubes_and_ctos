@@ -35,6 +35,7 @@ var game = {
 	classes: require('./classes.js'),
 	monsters: require('./monsters.js'),
 	weapons: require('./weapons.js'),
+	armor: require('./armor.js')(),
 	
 }
 
@@ -428,6 +429,8 @@ var word_list = {
 	'smit': 'attack',
 	'hit': 'attack',
 	//'cast': 'cast' // different parsing semantics
+	'tak': 'take',
+	'pick': 'take',
 }
 
 function stemmer(raw) {

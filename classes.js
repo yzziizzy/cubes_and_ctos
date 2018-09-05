@@ -14,10 +14,16 @@ module.exports = {
 				confidence: 0, 
 				// slipperyness / weaselyness
 				// crazy
+				// coordination
 			},
 			attacks: {
 				condescension: { dam: 20 },
+				fake_notification: {},
 			},
+			items: [
+				item("smartphone", 1),
+				item("laptop", 1),
+			],
 		},
 		hp_per_level: 10,
 		
@@ -58,6 +64,10 @@ module.exports = {
 		},
 		hp_per_level: 4,
 		
+		attacks: {
+			spill_coffee: {},
+		},
+		
 	},
 	
 	
@@ -82,3 +92,17 @@ module.exports = {
 	
 	
 };
+
+
+
+
+function item(name, qty) {
+	return {
+		id: name,
+		qty: qty,
+		level: 0,
+	};
+}
+
+
+
