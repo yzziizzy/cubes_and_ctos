@@ -213,9 +213,9 @@ function beginCombat(encounter) {
 	//
 	con.remainingPlayers = con.players.length;
 	con.remainingTargets = con.targets.length;
-	
 
-	console.log(helpers.nRoll(20));
+	listTargets();
+
 	runCombat();
 }
 
@@ -246,7 +246,7 @@ function runCombat() {
 		
 		//listTargets();
 		
-		respond((p.name + ", it is your turn.").yellow.bold);
+		respond((p.nick + ", it is your turn.").yellow.bold);
 		
 		return;
 	}
@@ -322,6 +322,21 @@ function checkEncounter() {
 	else {
 		console.log('no encounter found.'.yellow);
 	}
+}
+
+
+
+
+// ----------------------- interaction ----------------------------
+
+function give(player, itemname, count) {
+	// TODO: look up and combine with existing items
+	
+	player.items.push({
+		id: itemname,
+		qty: count,
+		level: 0,
+	})
 }
 
 
@@ -431,6 +446,13 @@ var word_list = {
 	//'cast': 'cast' // different parsing semantics
 	'tak': 'take',
 	'pick': 'take',
+	
+	'what': 'query',
+	
+	'look': 'look',
+	'search': 'search',
+	
+	'share': 'share',
 }
 
 function stemmer(raw) {
@@ -511,6 +533,36 @@ function processPlayerCommand(player, raw) {
 		advanceCombatTurn();
 		runCombat();
 	}
+	else if(action == "look") {
+		var loc = game.dungeon.locations[game.location];
+		narrate(loc.entry);
+		narrateEdges();
+	}
+	else if(action == "search") {
+		// look for hidden items
+		var loc = game.dungeon.locations[game.location]
+		
+		var found = false;
+		_.each(loc.items, function(item) {
+			if(helpers.nRoll(20) >= item.dc) {
+				give(player, item.what, item.count);
+				item.given = item.given || 0;
+				item.given += item.count;
+				
+				narrate(player.name + ' finds ' + item.count + 'x ' + game.items[item.what].name);
+				
+				found = true;
+			}  
+		})
+		
+		if(found == false) {
+			narrate(player.name + 'finds nothing.');
+		}
+		
+		// mark this location as searched
+		loc.searched = true;
+		
+	}
 	else {
 		respond((player.name + ': huh?').red);
 	}
@@ -529,6 +581,13 @@ function arrive() {
 	
 }
 
+function narrateEdges() {
+	var loc = game.dungeon.locations[game.location];
+	for(var i in loc.edges) {
+		var e = loc.edges[i];
+		narrate(e[0]);
+	}
+}
 
 
 

@@ -44,5 +44,15 @@ module.exports = {
 		},
 	},
 	
+	lanyard: {
+		name: "Lanyard",
+		desc: "An ordinary lanyard with some rando's ID in it. He does not look like you."
+	},
+	
+	
+	needle: {
+		name: "Needle",
+		desc: "An ordinary used heroin needle. There is no heroin left.",
+	},
 	
 };

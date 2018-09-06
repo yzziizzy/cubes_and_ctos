@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/yzziizzy/cubes_and_ctos/issues"
   },
-  "homepage": "https://github.com/yzziizzy/cubes_and_ctos#readme"
+  "homepage": "https://github.com/yzziizzy/cubes_and_ctos#readme",
+  "dependencies": {
+    "colors": "^1.3.2",
+    "fast-levenshtein": "^2.0.6",
+    "irc": "^0.5.2",
+    "underscore": "^1.9.1"
+  }
 }

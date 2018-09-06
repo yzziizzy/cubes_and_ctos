@@ -20,13 +20,16 @@ module.exports = {
 					monsters: [
 						{
 							name: 'parking_attendant',
-							min: 2,
-							max: 4,
-							drops: [ 'parking_pass' ],
+							min: 1,
+							max: 2,
+							drops: [ 'lanyard' ],
 						},
 						
 						
 					],
+					drops: [
+						'parking_pass',
+					]
 				},
 			],
 			items: [
@@ -49,12 +52,16 @@ module.exports = {
 							name: 'bum',
 							min: 1,
 							max: 1,
-							drops: [ 'parking_pass' ],
 						},
-						
-						
 					],
 				},
+			],
+			items: [
+				{
+					what: 'needle',
+					dc: 10,
+					freq: 'one_per_visit',
+				}
 			],
 			
 		},

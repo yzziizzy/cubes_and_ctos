@@ -61,13 +61,14 @@ module.exports = {
 				cunning: 3,
 				confidence: 0,
 			},
+			attacks: {
+				spill_coffee: {},
+			},
+		
 		},
 		hp_per_level: 4,
 		
-		attacks: {
-			spill_coffee: {},
-		},
-		
+
 	},
 	
 	

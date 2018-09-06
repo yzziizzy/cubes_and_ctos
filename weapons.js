@@ -10,6 +10,30 @@ module.exports = addKeys({
 		
 	},
 	
+	switch_to_dvorak: {
+		
+	},
+	
+	make_fake_id: {
+		name: "Fake Notifications",
+		desc: "Target becoms distracted by a series of fake notifications.",
+		spell_level: 2,
+		effects: [
+			{ what: 'craft', item: 'fake_id' },
+		],
+		requires: {
+			any: ['laptop'],
+			access: ['printer'],
+		},
+		
+		success: [
+			"%user conjures a fake id for %target.",
+		],
+		failure: [
+			"%user's photoshop skills are lacking.",
+		],
+	},
+	
 	sudden_network_outage: {
 		name: "Sudden Network Outage",
 		desc: "Causes a temporary network outage for all enemies.",
@@ -233,6 +257,14 @@ module.exports = addKeys({
 	
 	// used by managers mostly
 	
+	work_on_saturday: {
+		
+	},
+	
+	work_on_sunday: {
+		
+	},
+	
 	performance_review: {
 		
 	},
@@ -268,7 +300,7 @@ module.exports = addKeys({
 	},
 	
 
-	
+	// religion and politics
 	
 	
 })
