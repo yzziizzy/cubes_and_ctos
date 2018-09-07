@@ -9,6 +9,8 @@ module.exports = function(game) {
 	var lex = {
 		start_word: {},
 		pos: {},
+		players: {},
+		monsters: {},
 		items: {},
 		weapons: {},
 	};
@@ -54,9 +56,14 @@ module.exports = function(game) {
 	}
 	
 	
+	function parse(raw) {
+		
+		var list = wordSplit(raw.toLowerCase()).map(stemmer);
+		
+		return parseSentence(list);
+	}
+	
 	function parseSentence(list) {
-		// TEMP:
-		list = wordSplit(list.toLowerCase())
 		
 		// only active verb forms are considered
 		//sentence = subject verb
@@ -448,9 +455,6 @@ module.exports = function(game) {
 	
 	
 	function processPlayerList(input) {
-		var out = {
-			players: {},
-		}
 		
 		for(var i in input) {
 			var pl = input[i];
@@ -458,8 +462,6 @@ module.exports = function(game) {
 			lex.players[pl.name.toLowerCase()] = pl.name;
 			lex.players[pl.nick.toLowerCase()] = pl.name;
 		}
-		
-		return out;
 	}
 	
 	
@@ -543,6 +545,7 @@ module.exports = function(game) {
 	
 		processGame: processGame,
 		
+		parse: parse,
 		parseSentence: parseSentence,
 		
 		stemmer: stemmer,

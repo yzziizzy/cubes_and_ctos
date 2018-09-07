@@ -41,7 +41,7 @@ if(process.argv[2] == "parser") {
 	
 	
 	parser_input.map(function(x) {
-		var y = parser.parseSentence(x)
+		var y = parser.parse(x)
 		
 		console.log("\n\n" + x.green + "\n" + util.inspect(y, false, null, true));
 		

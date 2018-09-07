@@ -1,5 +1,5 @@
 
-var Item = require('Item.js');
+var Item = require('./Item.js');
 
 
 module.exports = {
@@ -13,7 +13,7 @@ module.exports = {
 				tower_entrance: ["A large glass tower looms to the north.", 'tower', 'north'],
 				highway: ["The roar of traffic can be heard from the south.", 'traffic', 'roar', 'south', 'highway', 'road'],
 			},
-			encounters: [
+			/*encounters: [
 				{
 					intro: "A group of surley parking attendants approach.",
 					freq: 'first', // there can only be one first encounter for now
@@ -31,7 +31,7 @@ module.exports = {
 						'parking_pass',
 					]
 				},
-			],
+			],*/
 			items: [
 				
 			],

@@ -16,7 +16,7 @@ function Item(name, qty, level) {
 	return this;
 }
 
-module.export = Item;
+module.exports = Item;
 
 
 

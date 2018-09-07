@@ -138,7 +138,7 @@ function _de(a, b) {
 	}
 }
 
-function deepExtend() {}
+function deepExtend() {
 	var args = arguments;
 	
 	for(var i = 1; i < args.length; i++) {

@@ -13,6 +13,7 @@ var helpers = require('./helpers.js');
 
 
 
+
 function randInt(min, max) {
 	return (min + (Math.random() * (max - min))) | 0;
 }
@@ -40,6 +41,8 @@ var game = {
 }
 
 
+
+var parser = require('./parser.js')(game);
 
 var npc_combat = require('./npc_combat.js')(game, attack /*temp*/);
 
@@ -460,11 +463,29 @@ function stemmer(raw) {
 }
 
 
-function processPlayerCommand(player, raw) {
-	var sp = raw.split(' ');
+function extractVerb(tree) {}
+
+function findVerbAction(dia) {
+	if(!dia || !dia.verb) return false;
 	
-	var stem = stemmer(sp[0]);
-	var action = word_list[stem];
+	return word_list[dia.verb.verb.verb]; // yes, 3 layers deep
+	
+}
+
+function findDirectObject(dia) {
+	if(!dia || !dia.dobj) return false;
+	
+	return dia.dobj.noun.noun;
+	
+}
+
+
+
+
+function processPlayerCommand(player, raw) {
+	
+	var dia = parser.parse(raw);
+	var action = findVerbAction(dia);
 	
 	if(!action) {
 		console.log('unknown action: ', sp[0]);
@@ -472,8 +493,11 @@ function processPlayerCommand(player, raw) {
 		return;
 	}
 	
+	console.log('action: '.green + action)
+	
+	
 	if(action == 'move') {
-		var where = sp[1];
+		var where = findDirectObject(dia);
 		var found = null;
 		
 		// check edges
@@ -502,14 +526,11 @@ function processPlayerCommand(player, raw) {
 		
 		// parse the command
 		var weaponname;
-		var target;
+		var target; // 
 		
-		// try to find the weapon
-		for(var i = 0; i < sp.length - 1; i++) {
-			if(sp[i] == 'with') {
-				weaponname = sp[i+1]; // TODO: levenstein distance error correction 
-			}
-		}
+		// try to find the weapon - object of a preposition on the direct object
+		weaponname = dia.dobj.preps[0].obj.noun;
+		// TODO: fuzzy match names, including abbreviations, prefixes, and postfixes
 		
 		if(!game.weapons[weaponname]) {
 			respond(("No such weapon: " + weaponname).red);
@@ -517,14 +538,17 @@ function processPlayerCommand(player, raw) {
 		}
 		
 		
-		// try to find a target 
+		// try to find a target - direct object 
+		// = findDirectObject(dia);;
 		//  HACK: choose the first one for now
+		/*
 		for(var i = 0; i < game.conflict.targets.length; i++) {
 			if(game.conflict.targets[i].hp > 0) {
 				target = game.conflict.targets[i];
 				break;
 			}
 		}
+		*/
 		
 		// BUG: crashes when all targets are dead
 		
@@ -622,6 +646,8 @@ function ingest(nick, msg) {
 				respond("No players have joined".red.bold);
 				return;
 			}
+			
+			parser.processGame();
 			
 			game.location = game.dungeon.start;
 			arrive();
@@ -726,7 +752,7 @@ cl.addListener('message#cubes', function (from, message) {
 
 cl.addListener('action', function (from, to, text, message) {
 	//console.log(from, to, text, message);
-	ingest(from, "- " + text);
+	ingest(from, "-" + from + " " + text);
 });
 
 
