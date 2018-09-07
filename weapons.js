@@ -265,6 +265,10 @@ module.exports = addKeys({
 		
 	},
 	
+	office_sports_pool: {
+		
+	},
+	
 	performance_review: {
 		
 	},

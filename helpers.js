@@ -8,12 +8,15 @@ module.exports = {
 	createPlayer: createPlayer, 
 	levelUp: levelUp,
 	applyUserWeaponMods: applyUserWeaponMods,
+	
 	rollInitiative: rollInitiative,
 	nRoll: nRoll,
 	advRoll: advRoll,
 	multiRoll: multiRoll,
 	multiRollList: multiRollList,
 	rollDice: rollDice,
+	
+	deepExtend: deepExtend,
 }
 
 
@@ -103,4 +106,44 @@ function multiRollList(list) {
 
 function rollDice(opt) {
 	return opt.base|0 + multiRollList(opt.dice);
+}
+
+
+function _de(a, b) {
+	for(var k in b) {
+		if(a[k] instanceof Array) {
+			if(b[k] == null || b[k] == undefined) {
+				continue;
+			}
+			else if(b[k] instanceof Array) {
+				a[k] = a[k].concat(b[k]);
+				continue;
+			}
+			else {
+				// append to array? 
+			}
+		}
+		else if(typeof a[k] == 'Object') {
+			if(b[k] == null || b[k] == undefined) {
+				continue;
+			}
+			else if(typeof b[k] == 'Object') {
+				_de(a[k], b[k]);
+				continue;
+			}
+		}
+		
+		// overwrite is can't be combined
+		a[k] = b[k];
+	}
+}
+
+function deepExtend() {}
+	var args = arguments;
+	
+	for(var i = 1; i < args.length; i++) {
+		_de(args[0], args[i]);
+	}
+	
+	return args[0];
 }

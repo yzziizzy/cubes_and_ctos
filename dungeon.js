@@ -1,9 +1,9 @@
 
+var Item = require('Item.js');
+
 
 module.exports = {
 	start: 'parking_lot',
-	
-	
 	
 	locations: {
 		parking_lot: {
@@ -42,6 +42,26 @@ module.exports = {
 			edges: {
 				parking_lot: ["A sea of vehicles lies to the west.", 'parking', 'sea', 'lot', 'west'],
 				
+			},
+			features: {
+				shed: {
+					name: "Maintenance Shed",
+					items: [
+						Item("gasoline", 5),
+						Item("hedge_trimmers", 1),
+					],
+				},
+				sprinkler_controls: {
+					name: "Sprinker Controls",
+					locked: 'sprinkler_key',
+					dc: [25, 'strength'],
+					actions: {
+						enable: {
+							on: 'Turn Sprinkers On',
+							off: 'Turn Sprinkers Off',
+						},
+					},
+				},
 			},
 			encounters: [
 				{
@@ -95,7 +115,12 @@ module.exports = {
 			entry: "",
 			edges: {
 				foyer: ["", 'exit', 'leave', 'revolving', 'door'],
-				
+			},
+			for_sale: {
+				coffee: {},
+				latte: {},
+				espresso: {},
+				cookie: {},
 			},
 		},
 		
