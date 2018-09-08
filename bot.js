@@ -473,10 +473,15 @@ function findVerbAction(dia) {
 }
 
 function findDirectObject(dia) {
-	if(!dia || !dia.dobj) return false;
+	if(!dia || !dia.dobj || !dia.dobj.noun) return false;
 	
 	return dia.dobj.noun.noun;
+}
+
+function findPrepObject(dt, preplist) {
+	if(!dt) return false;
 	
+	//return dia.dobj.noun.noun;
 }
 
 
@@ -558,12 +563,14 @@ function processPlayerCommand(player, raw) {
 		runCombat();
 	}
 	else if(action == "look") {
+		// TODO: check for specific locations to check: "in the shed"
 		var loc = game.dungeon.locations[game.location];
 		narrate(loc.entry);
 		narrateEdges();
 	}
 	else if(action == "search") {
 		// look for hidden items
+		// TODO: check for specific locations to check: "in the shed"
 		var loc = game.dungeon.locations[game.location]
 		
 		var found = false;

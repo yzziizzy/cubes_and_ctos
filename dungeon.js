@@ -103,18 +103,25 @@ module.exports = {
 		},
 		
 		foyer: {
-			entry: "A cavernous hall surrounds you. Locals call it \"Foy'yer\".",
+			entry: "A cavernous hall surrounds you. Locals call it \"Foyer\".",
 			edges: {
 				tower_entrance: ["Freedom peeks though a large revolving door.", 'exit', 'leave', 'revolving', 'door'],
 				balcony: ["Stairs lead up to a balcony.", 'stairs', 'balcony'],
-				elevators: [],
+				elevator: [],
+			},
+		},
+		
+		balcony: {
+			entry: "balcony",
+			edges: {
+				foyer: ["Stairs lead down from the overlook.", 'stairs', 'down', 'foyer'],
 			},
 		},
 		
 		coffee_shop: {
 			entry: "",
 			edges: {
-				foyer: ["", 'exit', 'leave', 'revolving', 'door'],
+				foyer: ["Return to Foyer", 'foyer'],
 			},
 			for_sale: {
 				coffee: {},
@@ -127,7 +134,44 @@ module.exports = {
 		restrooms: {
 			entry: "",
 			edges: {
-				foyer: ["", 'exit', 'leave', 'revolving', 'door'],
+				foyer: ["Exit", 'exit', 'leave', 'revolving', 'door'],
+				
+			},
+		},
+		
+		
+		elevator: {
+			entry: "You board the elevator.",
+			edges: {
+				foyer: ["1", '1', 'one', 'foyer', 'ground'],
+				floor_2_hallway: ["2", '2', 'two'],
+				floor_3_hallway: ["3", '3', 'three'],
+				floor_4_hallway: ["4", '4', 'four'],
+				floor_5_hallway: ["5", '5', 'five'],
+			}
+		},
+		
+		floor_2_hallway: {
+			entry: "The elevator dings. The doors open to Floor Two.",
+			edges: {
+				
+			},
+		},
+		floor_3_hallway: {
+			entry: "The elevator dings. The doors open to Floor Three.",
+			edges: {
+				
+			},
+		},
+		floor_4_hallway: {
+			entry: "The elevator dings. The doors open to Floor Four.",
+			edges: {
+				
+			},
+		},
+		floor_5_hallway: {
+			entry: "The elevator dings. The doors open to Floor Five.",
+			edges: {
 				
 			},
 		},
